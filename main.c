@@ -9,30 +9,34 @@ int main(){
   DIR *fd=opendir("./plugin1/");
   struct dirent *q;
   struct name{
-    float (*fun)(float*,float*);
+//    float (*fun)(float*,float*);
+    char str[100];
   }mass[100];
   void* bibl[100];
   int i=0,w=0;
   while((q = readdir(fd)) != NULL){
     if((strcmp(q->d_name,".")!=0)&&(strcmp(q->d_name,"..")!=0)){
       printf("%d) %s\n",i,q->d_name);
-      bibl[i]=dlopen(q->d_name,RTLD_NOW);
-      mass[i].fun = dlsym(bibl[i],q->d_name);
+      sprintf(mass[i].str,"%s",q->d_name);
       i++;
     }
   }
-  printf(" 11111111");
   float a,b,rez;
-  char zn;
-  printf("!!!!!!!!!   %f   !!!!!!!!!",mass[0].fun(5,6));
- // scanf("%f %c %f",&a,&zn,&b);
- // if(zn=='+') rez=add(&a,&b);
- // else if(zn=='-') {zn='+'; b=-b;rez=add(&a,&b);}
- // else if(zn=='/') rez=sub(&a,&b);
- // else if(zn=='*') rez=mul(&a,&b);
-  //printf("\n%f %c %f = %f\n",a,zn,b,rez);
-  i--;
-  while(i>=0) dlclose(bibl[i]),i--;
+  int op;
+  printf("%d) exit\n",i);
+  while(1){
+    printf("\n? a b\n");
+    scanf("%d",&op);
+    if(op==i) break;
+    scanf("%f %f",&a,&b);
+    char path[100];
+    sprintf(path,"./plugin1/%s",mass[op].str);
+    void* fd1=dlopen(path,RTLD_NOW);
+    float (*func)(float*,float*)=dlsym(fd1,(char*)mass[i].str);
+    printf("\n = %f\n",func(&a,&b));
+    fflush(stdout);
+    dlclose(fd1);
+  }
   closedir(fd);
   return 0;
 }
